@@ -1,0 +1,22 @@
+
+body {
+    margin: 0;
+}
+
+.container {
+    width: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.functionContainer {
+    background-color: rgb(255, 221, 221);
+    height: 25%;
+}
+
+.boardContainer {
+    background-color: grey;
+    height: 75%;
+}
+
