@@ -3,9 +3,15 @@
 const DOM = ( () => {
 
     const boardDOM = document.getElementById('board');
+    const statusDOM = document.getElementById('status');
+    const resetDOM = document.getElementById('reset');
 
     const getBoxes = () => {
         return boardDOM.querySelectorAll('.box');
+    }
+
+    const updateStatus = (message) => {
+        statusDOM.innerText = message;
     }
 
     const createBox = () => {
@@ -23,9 +29,15 @@ const DOM = ( () => {
         })
     }
 
+    const getResetDOM = () => {
+        return resetDOM;
+    }
+
     return {
         render,
-        getBoxes
+        getBoxes,
+        updateStatus,
+        getResetDOM
     }
 })();
 
@@ -45,6 +57,13 @@ const board = ( () => {
         console.log(gameState);
     }
 
+    const reset = () => {
+        for (let i = 0;i<9;i++) {
+            gameState[i] = '';
+
+        }
+    }
+
     const init = () => {
         for (let i = 0;i<9;i++) {
             gameState.push('');
@@ -56,7 +75,8 @@ const board = ( () => {
         getGameState,
         init,
         addToGameState,
-        getFieldAt
+        getFieldAt,
+        reset
     };
 })();
 
@@ -91,11 +111,23 @@ const gameLogic = ( () => {
         return gameOver;
     }
     
+    const reset = () => {
+        gameOver = false;
+        draw = false;
+        currentPlayer = player1;
+    }
+
     const switchPlayer = () => {
-        if (currentPlayer.getSign() === 'X')
+        if (currentPlayer.getSign() === 'X') {
+
             currentPlayer = player2;
-        else
+            DOM.updateStatus(`${currentPlayer.getSign()}'s turn`)
+        }
+        else {
             currentPlayer = player1;
+            DOM.updateStatus(`${currentPlayer.getSign()}'s turn`)
+        
+        }
     }
 
     const checkWin = (sign) => {
@@ -120,30 +152,32 @@ const gameLogic = ( () => {
                 && board.getFieldAt(box2) === sign
                 && board.getFieldAt(box3) === sign) {
                     gameOver = true;
-                    console.log(gameOver);
+                }
+        }
+        return gameOver
+    }
+
+        
+        const checkDraw = () => {
+            if (!board.getGameState().includes('')) {
+                draw = true;
+                return true;
             }
+            return false;
         }
-
-    }
-
-    const checkDraw = () => {
-        if (!board.getGameState().includes('')) {
-            draw = true;
-            console.log(draw);
+        
+        return {
+            getCurrentPlayer,
+            switchPlayer,
+            checkWin,
+            getGameOver,
+            checkDraw,
+            reset
         }
-    }
-
-    return {
-        getCurrentPlayer,
-        switchPlayer,
-        checkWin,
-        getGameOver,
-        checkDraw
-    }
-})();
-
-
-
+    })();
+    
+    
+    
 const Controllers = ( () => {
     
     const init = () => {
@@ -153,15 +187,32 @@ const Controllers = ( () => {
                 
             })
         })
+
+        DOM.getResetDOM().addEventListener( 'click', () => {
+            board.reset();
+            gameLogic.reset();
+            DOM.getBoxes().forEach( childNode => {
+                childNode.innerHTML = '';
+            })
+            DOM.updateStatus(`${gameLogic.getCurrentPlayer().getSign()}'s turn'`)
+        })
     }
     
     const boxListener = (childNode,e) => {
         if (childNode.innerHTML === '' && !gameLogic.getGameOver()) {
             childNode.innerHTML = gameLogic.getCurrentPlayer().getSign();
             board.addToGameState(parseInt(e.target.dataset.index),gameLogic.getCurrentPlayer().getSign());
-            gameLogic.checkWin(gameLogic.getCurrentPlayer().getSign())
-            gameLogic.checkDraw();
-            gameLogic.switchPlayer();
+            
+            if (gameLogic.checkWin(gameLogic.getCurrentPlayer().getSign())) {
+                DOM.updateStatus(`${gameLogic.getCurrentPlayer().getSign()} wins!!`)
+            }
+            else if (gameLogic.checkDraw()) {
+                DOM.updateStatus(`draw!!`) 
+            }
+            else {
+                gameLogic.switchPlayer();
+        }
+            
         }
     }
 
