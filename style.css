@@ -1,10 +1,13 @@
+:root {
+    --boxsize: 20vw;
+}
 
 body {
     margin: 0;
 }
 
 .container {
-    width: 100vh;
+    width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -12,11 +15,42 @@ body {
 
 .functionContainer {
     background-color: rgb(255, 221, 221);
-    height: 25%;
+    height: 25vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.status {
+    font-size: 10vw;
 }
 
 .boardContainer {
     background-color: grey;
-    height: 75%;
+    height: 75vh;
+
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.box {
+    height: var(--boxsize);
+    width: var(--boxsize);
+    background-color: white;
+    border: 1px solid black;
+    font-size: 10vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
 }
 
